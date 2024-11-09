@@ -72,19 +72,19 @@ def logout_view(request):
 
 # Check if the user has a specific role
 def has_role(user, role):
-    return user.userprofile.role == role
+     return user.is_authenticated and hasattr(user, "userprofile") and user.userprofile.role == role
 
-# Admin view, only accessible to users with the "Admin" role
+# Admin view
 @user_passes_test(lambda user: has_role(user, "Admin"))
 def admin_view(request):
     return render(request, "relationship_app/admin_view.html")
 
-# Librarian view, only accessible to users with the "Librarian" role
+# Librarian view
 @user_passes_test(lambda user: has_role(user, "Librarian"))
 def librarian_view(request):
     return render(request, "relationship_app/librarian_view.html")
 
-# Member view, only accessible to users with the "Member" role
+# Member view
 @user_passes_test(lambda user: has_role(user, "Member"))
 def member_view(request):
     return render(request, "relationship_app/member_view.html")
