@@ -8,6 +8,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.contrib.auth.decorators import user_passes_test
 
 
 from .models import Book
@@ -21,8 +22,6 @@ def list_books(request):
     })
 
 
-# Create a class-based view in relationship_app/views.py that displays details for a specific library, listing all books available in that library.
-# Utilize Django’s ListView or DetailView to structure this class-based view.
 class LibraryDetailView(DetailView):
     model = Library
     template_name = "relationship_app/library_detail.html"
@@ -69,3 +68,23 @@ def logout_view(request):
     return render(request, "relationship_app/login.html", {
         "message": "Logged out"
     })
+
+
+# Check if the user has a specific role
+def has_role(user, role):
+    return user.userprofile.role == role
+
+# Admin view, only accessible to users with the "Admin" role
+@user_passes_test(lambda user: has_role(user, "Admin"))
+def admin_view(request):
+    return render(request, "relationship_app/admin_view.html")
+
+# Librarian view, only accessible to users with the "Librarian" role
+@user_passes_test(lambda user: has_role(user, "Librarian"))
+def librarian_view(request):
+    return render(request, "relationship_app/librarian_view.html")
+
+# Member view, only accessible to users with the "Member" role
+@user_passes_test(lambda user: has_role(user, "Member"))
+def member_view(request):
+    return render(request, "relationship_app/member_view.html")
