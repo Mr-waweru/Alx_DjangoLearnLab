@@ -71,20 +71,20 @@ def logout_view(request):
 
 
 # Check if the user has a specific role
-def has_role(user, role):
+def check_role(user, role):
      return user.is_authenticated and hasattr(user, "userprofile") and user.userprofile.role == role
 
 # Admin view
-@user_passes_test(lambda user: has_role(user, "Admin"))
+@user_passes_test(lambda user: check_role(user, "Admin"))
 def admin_view(request):
     return render(request, "relationship_app/admin_view.html")
 
 # Librarian view
-@user_passes_test(lambda user: has_role(user, "Librarian"))
+@user_passes_test(lambda user: check_role(user, "Librarian"))
 def librarian_view(request):
     return render(request, "relationship_app/librarian_view.html")
 
 # Member view
-@user_passes_test(lambda user: has_role(user, "Member"))
+@user_passes_test(lambda user: check_role(user, "Member"))
 def member_view(request):
     return render(request, "relationship_app/member_view.html")
