@@ -93,6 +93,35 @@ def member_view(request):
 """
 
 
+# Helper function to check if the user is an Admin
+def is_admin(user):
+    return user.userprofile.role == 'Admin'
+
+# Helper function to check if the user is a Librarian
+def is_librarian(user):
+    return user.userprofile.role == 'Librarian'
+
+# Helper function to check if the user is a Member
+def is_member(user):
+    return user.userprofile.role == 'Member'
+
+# Admin view, only accessible to users with the 'Admin' role
+@user_passes_test(is_admin)
+def admin_view(request):
+    return render(request, 'relationship_app/admin_view.html')
+
+# Librarian view, only accessible to users with the 'Librarian' role
+@user_passes_test(is_librarian)
+def librarian_view(request):
+    return render(request, 'relationship_app/librarian_view.html')
+
+# Member view, only accessible to users with the 'Member' role
+@user_passes_test(is_member)
+def member_view(request):
+    return render(request, 'relationship_app/member_view.html')
+
+
+"""
 def is_admin(user):
     return user.userprofile.role == "Admin"
 
@@ -116,7 +145,7 @@ def librarian_view(request):
 @user_passes_test(is_member)
 def member_view(request):
     return render(request, "relationship_app/member_view.html")
-
+"""
 
 #BookForm for demonstration
 class BookForm(forms.ModelForm):
