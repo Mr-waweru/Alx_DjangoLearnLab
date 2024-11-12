@@ -11,7 +11,7 @@ class BookAdmin(admin.ModelAdmin):
 admin.site.register(Book, BookAdmin)
 
 
-class CustoUserAdmin(UserAdmin):
+class CustomUserAdmin(UserAdmin):
     model = CustomUser
     fieldsets = UserAdmin.fieldsets + (
         (None, {
@@ -19,4 +19,4 @@ class CustoUserAdmin(UserAdmin):
         }),
     )
 
-admin.site.register(CustomUser, CustoUserAdmin)
+admin.site.register(CustomUser, CustomUserAdmin)
