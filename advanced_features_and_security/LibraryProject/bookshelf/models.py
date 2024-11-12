@@ -46,6 +46,14 @@ class Book(models.Model):
     author = models.CharField(max_length=200)
     publication_year = models.IntegerField(null=True)
 
+    class Meta:
+        permissions = [
+            ("can_view", "Can view book"),  # (first item)-> codename used in code (e.g., in views or templates) to check if a user has that permission.
+            ("can_create", "Can create book"),  # (second item)-> human-readable name, which appears in the Django admin.
+            ("can_edit", "Can edit book"),
+            ("can_delete", "Can delete book"),
+        ]
+
     def __str__(self):
         return f"Title: {self.title}, Author: {self.author}, Publication_Year: {self.publication_year}"
     
