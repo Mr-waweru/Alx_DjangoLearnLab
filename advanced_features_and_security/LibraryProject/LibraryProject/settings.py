@@ -187,3 +187,12 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 # This setting tells the browser to block pages that appear to contain XSS vulnerabilities.
 SECURE_BROWSER_XSS_FILTER = True
 
+# Used to ensure that Django correctly recognizes requests as HTTPS when your application is 
+# deployed behind a reverse proxy (such as Nginx or a load balancer) that handles SSL termination.
+# How It Works: The SECURE_PROXY_SSL_HEADER tuple instructs Django to check for the presence of HTTP_X_FORWARDED_PROTO and 
+# verify that its value is https. 
+# If both conditions are met, Django treats the request as secure (i.e., over HTTPS),
+SECURE_PROXY_SSL_HEADER = (
+    'HTTP_X_FORWARDED_PROTO',
+    'https',
+)
