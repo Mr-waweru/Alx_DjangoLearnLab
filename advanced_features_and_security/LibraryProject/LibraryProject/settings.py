@@ -23,7 +23,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-f(o&ur4$5^ady8i&56zuufvdm6(olr+2zm_-^i1#%iznwgx%u('
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
@@ -124,4 +124,27 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = "bookshelf.CustomUser"
+
+""""Additional Security Modification"""
+# Specifies a custom user model (CustomUser) as the authentication model, 
+# allowing you to extend the default user model with additional fields and functionalities.
+AUTH_USER_MODEL = [
+    "bookshelf.CustomUser",
+]
+
+# Enables the Cross-Site Scripting (XSS) filter in modern browsers, which helps detect and prevent cross-site scripting attacks.
+# When set to True, it tells the browser to block pages that appear to contain XSS vulnerabilities, adding an extra layer of defense.
+SECURE_BROWSER_XSS_FILTER = True
+
+# Prevents the website from being displayed in an iframe by any site, mitigating the risk of "clickjacking" attacks.
+X_FRAME_OPTIONS = "DENY"
+
+# This tells browsers not to try to guess the content type and forces them to adhere strictly to the declared Content-Type, helping prevent certain types of injection attacks
+# Protects against content type sniffing vulnerabilities by setting the X-Content-Type-Options header to nosniff
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# Ensures CSRF cookie is only sent over HTTPS connections, preventing the CSRF token from being intercepted on unencrypted HTTP connections.
+CSRF_COOKIE_SECURE = True
+
+# Ensures that the session cookie (used to keep users logged in) is only sent over HTTPS.
+SESSION_COOKIE_SECURE = True
