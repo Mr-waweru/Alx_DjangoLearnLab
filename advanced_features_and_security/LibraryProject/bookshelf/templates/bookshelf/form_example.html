@@ -1,0 +1,11 @@
+{% extends "bookshelf/layout.html" %}
+
+{% block body %}
+<h1>Form</h1>
+
+<form action="" method="POST">
+    {% csrf_token %}
+        {{form}}
+</form>
+
+{% endblock%}
