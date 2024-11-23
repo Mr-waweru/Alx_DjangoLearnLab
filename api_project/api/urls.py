@@ -1,5 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
+from rest_framework.authtoken.views import obtain_auth_token
 
 from . import views
 
@@ -12,6 +13,7 @@ views.BookViewSet
 urlpatterns = [
     path("books/", views.BookList.as_view(), name="book-list"),  # Maps to the BookList view
     path("", include(router.urls)),
+    path("api-token-auth/", obtain_auth_token, name="api-token-auth")
 ]
 
 """
