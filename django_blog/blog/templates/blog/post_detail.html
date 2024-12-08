@@ -1,0 +1,14 @@
+{% extends "blog/layout.html" %}
+
+{% block title %}{{ object.title }}{% endblock %}
+
+{% block content %}
+<h2>{{ object.title }}</h2>
+<p>{{ object.content }}</p>
+<p>Published on: {{ object.published_date }}</p>
+<p>Author: {{ object.author }}</p>
+{% if request.user == object.author %}
+    <a href="{% url 'post-update' object.pk %}">Edit</a>
+    <a href="{% url 'post-delete' object.pk %}">Delete</a>
+{% endif %}
+{% endblock %}
