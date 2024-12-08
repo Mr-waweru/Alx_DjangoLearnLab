@@ -1,5 +1,5 @@
 from django import forms
-from .models import Post
+from .models import Post, Comment
 
 class PostForm(forms.ModelForm):
     class Meta:
@@ -12,3 +12,12 @@ class PostForm(forms.ModelForm):
         if commit:
             post.save()
         return post
+
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ["content"]  # Only include the content field
+        widgets = {
+            "content": forms.Textarea(attrs={"class": "form-control", "placeholder": "Add a comment...", "rows": 3}),
+        }

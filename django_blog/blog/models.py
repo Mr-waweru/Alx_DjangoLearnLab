@@ -49,3 +49,14 @@ class Post(models.Model):
 
     def __str__(self):
         return f"{self.title} by {self.author}"
+    
+
+class Comment(models.Model):
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")  # Links to a specific post
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  # Links to the comment's author
+    content = models.TextField()  # The comment's text
+    created_at = models.DateTimeField(auto_now_add=True)  # Automatically set the creation time
+    updated_at = models.DateTimeField(auto_now=True)  # Automatically set the last update time
+
+    def __str__(self):
+        return f"Comment by {self.author} on {self.post.title}"
