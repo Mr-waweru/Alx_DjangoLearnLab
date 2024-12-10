@@ -1,0 +1,10 @@
+{% extends "blog/layout.html" %}
+
+{% block content %}
+<h2>Posts Tagged "{{ view.kwargs.tag_name }}"</h2>
+<ul>
+    {% for post in posts %}
+        <li><a href="{% url 'post-detail' post.pk %}">{{ post.title }}</a></li>
+    {% endfor %}
+</ul>
+{% endblock %}

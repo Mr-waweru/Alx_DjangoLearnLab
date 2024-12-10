@@ -37,4 +37,11 @@
     <p>You must be logged in to post a comment.</p>
 {% endif %}
 
+<p>Tags: 
+    {% for tag in post.tags.all %}
+        <a href="{% url 'posts-by-tag' tag.name %}" class="badge badge-secondary">{{ tag.name }}</a>
+    {% endfor %}
+</p>
+
+
 {% endblock %}

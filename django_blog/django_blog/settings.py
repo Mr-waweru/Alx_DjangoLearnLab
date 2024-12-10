@@ -29,7 +29,8 @@ INSTALLED_APPS = [
     # apps
     'blog',
     # Third party apps
-    'rest_framework'
+    'rest_framework',
+    'taggit',
 ]
 
 MIDDLEWARE = [
@@ -70,7 +71,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
-        'PORT': '5432',
+        'PORT': '',
     }
 }
 

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
     <link rel="stylesheet" href="{% static 'blog/style.css' %}">
     <title>{% block title %}Blog{% endblock %}</title>
 </head>
@@ -14,6 +15,10 @@
             <li><a href="{% url 'logout' %}">Logout</a></li>
             <li><a href="{% url 'profile' %}">Profile</a></li>
         </ul>
+        <form method="get" action="{% url 'search-results' %}" class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" name="q">
+            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </form>        
     </nav>
 </header>
 
