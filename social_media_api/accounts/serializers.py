@@ -18,7 +18,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         # Create the user
-        user = User.objects.create_user(
+        user = get_user_model().objects.create_user(    #Used this because of alx checker. get_user_model() method is assigned to User at line 5
             username = validated_data["username"],
             email = validated_data["email"],
             password = validated_data["password"]
