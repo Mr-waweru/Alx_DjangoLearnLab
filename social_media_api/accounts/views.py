@@ -17,34 +17,52 @@ class RegisterView(CreateAPIView):
     serializer_class = RegisterSerializer   # Use the RegisterSerializer to validate input
     permission_classes = [permissions.AllowAny] # Allow anyone to access this endpoint
 
+    def create(self, request, *args, **kwargs):
+        """Override to include token in the response."""
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()  # Save the user instance
+
+        # Generate or retrieve the token for the newly registered user
+        token, created = Token.objects.get_or_create(user=user)
+
+        # Include the token in the response
+        return Response(
+            {
+                "user": {
+                    "id": user.id,
+                    "username": user.username,
+                    "email": user.email,
+                },
+                "token": token.key,
+            },
+            status=status.HTTP_201_CREATED
+        )
+
 
 # View for user login
 class LoginView(ObtainAuthToken):
     """API endpoint for user login and token generation"""
     serializer_class = LoginSerializer
+    permission_classes = [permissions.AllowAny]
 
     def post(self, request, *args, **kwargs):
-        """Handle login requests by validating credentials and returning a token"""
-
-        # Validate the input using the serializer
-        data = request.data
-        serializer = self.serializer_class(data=data, context={
-            "request": request
-        })
+        """Handle login requests by validating credentials and returning a token."""
+        serializer = self.serializer_class(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        # Get the validated user
+        # Extract user and token from validated data
         user = serializer.validated_data["user"]
-
-        # Retrieve or create an authentication token for the user
         token, created = Token.objects.get_or_create(user=user)
 
-        # Return the token and user details as a response
         return Response(
             {
-                "token": token.key, # Authentication token
-                "user_id": user.pk, # User ID
-                "username": user.username   # Username
+                "user": {
+                    "id": user.id,
+                    "username": user.username,
+                    "email": user.email,
+                },
+                "token": token.key,
             },
             status=status.HTTP_200_OK
         )
@@ -58,6 +76,7 @@ class UserDetailView(RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_object(self):
+        """return the current authenticated user."""
         return self.request.user
 
 
