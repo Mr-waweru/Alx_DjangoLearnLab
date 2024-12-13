@@ -29,8 +29,8 @@ class RegisterSerializer(serializers.ModelSerializer):
     
 """Serializer to handle user login by username or email with a password."""
 class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField(required=False) # Optional field for username
-    email = serializers.CharField(required=False)   # Optional field for email
+    username = serializers.CharField() # Optional field for username
+    email = serializers.CharField()   # Optional field for email
     password = serializers.CharField(write_only=True)
 
     def validate(self, data):
