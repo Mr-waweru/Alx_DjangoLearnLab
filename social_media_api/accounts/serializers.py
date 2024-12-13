@@ -17,11 +17,14 @@ class RegisterSerializer(serializers.ModelSerializer):
         extra_kwargs = {"password": {"write_only": True}}
 
     def create(self, validated_data):
+        # Create the user
         user = User.objects.create_user(
             username = validated_data["username"],
             email = validated_data["email"],
             password = validated_data["password"]
         )
+        # Generate a token for the user
+        Token.objects.create(user=user)
         return user
     
 """Serializer to handle user login by username or email with a password."""
@@ -29,7 +32,6 @@ class LoginSerializer(serializers.Serializer):
     username = serializers.CharField(required=False) # Optional field for username
     email = serializers.CharField(required=False)   # Optional field for email
     password = serializers.CharField(write_only=True)
-    Token.objects.create()  # Remove this. Added coz of ALX checker
 
     def validate(self, data):
         """Validate the login credentials and authenticate the user"""
@@ -54,6 +56,10 @@ class LoginSerializer(serializers.Serializer):
         if not user.is_active:
             raise serializers.ValidationError("User account is disabled.")
         
-        # Attach authenticated user to the validated data
+        # Generate or retrieve token for authenticated user
+        token, created = Token.objects.get_or_create(user=user)
+
+        # Attach authenticated user and token to the validated data
         data["user"] = user
+        data["token"] = token.key
         return data
