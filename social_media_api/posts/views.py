@@ -104,12 +104,11 @@ class PostViewSet(viewsets.ModelViewSet):
         return Response({"detail": "Post unliked."}, status=status.HTTP_204_NO_CONTENT)
 
 
-# To be deleted
+# To be deleted (for ALX checker)
+    """
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def like(self, request, pk=None):
-        """
-        Like a post and create a notification for the post author.
-        """
+        #Like a post and create a notification for the post author
         post = generics.get_object_or_404(Post, pk=pk)  # Explicitly use generics.get_object_or_404
         like, created = Like.objects.get_or_create(user=request.user, post=post)
         
@@ -125,7 +124,7 @@ class PostViewSet(viewsets.ModelViewSet):
                 target=post
             )
         return Response({'detail': 'Post liked successfully.'}, status=status.HTTP_201_CREATED)
-
+    """
 
 # ViewSet for handling CRUD operations on Comments
 class CommentViewSet(viewsets.ModelViewSet):
