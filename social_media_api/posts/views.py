@@ -77,7 +77,7 @@ class PostViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["post"])
     def like(self, request, pk=None):
         post = generics.get_object_or_404(Post, pk=pk) # self.get_object()
-        like, created = Like.objects.get_or_create(user = request.user, post=post)
+        user = request.user
         if post.likes.filter(user=user).exists():  # Check if the user already liked this post
             return Response({"detail": "Already liked this post."}, status=status.HTTP_400_BAD_REQUEST)
         
@@ -102,6 +102,29 @@ class PostViewSet(viewsets.ModelViewSet):
             return Response({"detail": "You haven't liked this post."}, status=status.HTTP_400_BAD_REQUEST)
         like.delete()   # Remove the like
         return Response({"detail": "Post unliked."}, status=status.HTTP_204_NO_CONTENT)
+
+
+# To be deleted
+    @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
+    def like(self, request, pk=None):
+        """
+        Like a post and create a notification for the post author.
+        """
+        post = generics.get_object_or_404(Post, pk=pk)  # Explicitly use generics.get_object_or_404
+        like, created = Like.objects.get_or_create(user=request.user, post=post)
+        
+        if not created:  # User already liked the post
+            return Response({'detail': 'You have already liked this post.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Create a notification for the post author
+        if post.author != request.user:
+            Notification.objects.create(
+                recipient=post.author,
+                actor=request.user,
+                verb="liked your post",
+                target=post
+            )
+        return Response({'detail': 'Post liked successfully.'}, status=status.HTTP_201_CREATED)
 
 
 # ViewSet for handling CRUD operations on Comments
