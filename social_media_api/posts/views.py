@@ -77,7 +77,7 @@ class PostViewSet(viewsets.ModelViewSet):
     @action(detail=True, methods=["post"])
     def like(self, request, pk=None):
         post = generics.get_object_or_404(Post, pk=pk) # self.get_object()
-        user = request.user
+        like, created = Like.objects.get_or_create(user = request.user, post=post)
         if post.likes.filter(user=user).exists():  # Check if the user already liked this post
             return Response({"detail": "Already liked this post."}, status=status.HTTP_400_BAD_REQUEST)
         
