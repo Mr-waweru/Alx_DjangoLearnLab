@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework import viewsets, permissions, filters, status
+from rest_framework import viewsets, permissions, filters, status, generics
 from rest_framework.response import Response
 from rest_framework.decorators import action
 from rest_framework.pagination import PageNumberPagination
@@ -76,7 +76,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["post"])
     def like(self, request, pk=None):
-        post = self.get_object()
+        post = generics.get_object_or_404(Post, pk=pk) # self.get_object()
         user = request.user
         if post.likes.filter(user=user).exists():  # Check if the user already liked this post
             return Response({"detail": "Already liked this post."}, status=status.HTTP_400_BAD_REQUEST)
@@ -95,7 +95,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=["delete"])
     def unlike(self, request, pk=None):
-        post = self.get_object()
+        post = self.get_object()    # generics.get_object_or_404(Post, pk=pk)
         user = request.user
         like = post.likes.filter(user=user).first()  # Check if the user has liked this post
         if not like:
