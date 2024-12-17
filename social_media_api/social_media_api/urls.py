@@ -20,7 +20,8 @@ schema_view = get_schema_view(
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("accounts/", include("accounts.urls")),
-    path("api/", include("posts.urls")),
+    path("posts/", include("posts.urls")),
+    path("notifications/", include("notification.urls")),
 
     # Token generation
     path('auth/', include('djoser.urls.jwt')),  # auth/jwt/create or auth/jwt/refresh/ or auth/jwt/verify/
