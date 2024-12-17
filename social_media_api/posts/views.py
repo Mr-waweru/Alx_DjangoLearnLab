@@ -49,27 +49,34 @@ class PostViewSet(viewsets.ModelViewSet):
             return [permissions.IsAuthenticated(), IsAuthorPermission()]    # Custom permission for authors
         return super().get_permissions()    # Use default permissions for other actions
 
+    @action(detail=False, methods=["get"])
+    def feed(self, request):
+        """Custom action to fetch a personalized feed"""
+        queryset = self.get_queryset()
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
     @action(detail=True, methods=["post"])
     def like(self, request, pk=None):
         post = self.get_object()
         user = request.user
-        # Check if the user already liked this post
-        if post.likes.filter(user=user).exists():
+        if post.likes.filter(user=user).exists():   # Check if the user already liked this post
             return Response({"detail": "Already liked this post."}, status=status.HTTP_400_BAD_REQUEST)
-        # Create a new like
-        Like.objects.create(post=post, user=user)
+        Like.objects.create(post=post, user=user)  # Create a new like
         return Response({"detail": "Post liked."}, status=status.HTTP_201_CREATED)
 
     @action(detail=True, methods=["delete"])
     def unlike(self, request, pk=None):
         post = self.get_object()
         user = request.user
-        # Check if the user has liked this post
-        like = post.likes.filter(user=user).first()
+        like = post.likes.filter(user=user).first()  # Check if the user has liked this post
         if not like:
             return Response({"detail": "You haven't liked this post."}, status=status.HTTP_400_BAD_REQUEST)
-        # Remove the like
-        like.delete()
+        like.delete()   # Remove the like
         return Response({"detail": "Post unliked."}, status=status.HTTP_204_NO_CONTENT)
 
 
@@ -98,7 +105,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action in ['update', 'partial_update', 'destroy']:
-            return [permissions.IsAuthenticated(), IsAuthorPermission()]  # Custom permission for authors
+            return [permissions.IsAuthenticated(), IsAuthorPermission()]  # Only allow authors to modify/delete
         return super().get_permissions()  # Use default permissions for other actions
 
 
