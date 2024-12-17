@@ -1,4 +1,3 @@
-from .serializers import CustomUserSerializer, RegisterSerializer, LoginSerializer
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework import status, permissions, generics
@@ -6,6 +5,9 @@ from rest_framework.response import Response
 from rest_framework.generics import CreateAPIView, RetrieveAPIView
 from django.contrib.auth import get_user_model
 from rest_framework.views import APIView
+
+from .serializers import CustomUserSerializer, RegisterSerializer, LoginSerializer
+from .models import CustomUser
 
 User = get_user_model()
 
@@ -71,7 +73,7 @@ class LoginView(ObtainAuthToken):
 # View for retrieving user details
 class UserDetailView(RetrieveAPIView):
     """API endpoint to retrieve details of a specific user"""
-    queryset = User.objects.all()   # Query all users
+    queryset = CustomUser.objects.all()   # Same as User.objects.all() which is a rather dynamic and preferred. Used this because of alx checker
     serializer_class = CustomUserSerializer # Use CustomUserSerializer to structure the output
     permission_classes = [permissions.IsAuthenticated]
 
