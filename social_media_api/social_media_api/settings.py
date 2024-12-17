@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     # apps
     'accounts',
     'posts',
+    'notifications',
     
     # Third party apps
     'rest_framework',
