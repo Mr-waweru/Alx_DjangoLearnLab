@@ -6,6 +6,7 @@ from rest_framework.pagination import PageNumberPagination
 
 from .models import Post, Comment, Like
 from .serializers import PostSerializer, CommentSerializer, LikeSerializer
+from notifications.models import Notification
 
 
 class StandardResultsSetPagination(PageNumberPagination):
@@ -29,7 +30,18 @@ class PostViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         """Automatically set the current user as the author when creating a post."""
-        serializer.save(author=self.request.user)
+        post = serializer.save(author=self.request.user)
+    
+        # Notify all followers of the user about the new post
+        followers = self.request.user.followers.all()  # Using `followers` field on the user model
+        for follower in followers:
+            Notification.objects.create(
+                recipient=follower,  # Each follower gets a notification
+                actor=self.request.user,  # The post author
+                verb="created a new post",  # Action performed
+                target=post  # The post that was created
+            )
+
 
     def create(self, request, *args, **kwargs):
         """Override create method to include a status code for successful creation."""
@@ -66,10 +78,20 @@ class PostViewSet(viewsets.ModelViewSet):
     def like(self, request, pk=None):
         post = self.get_object()
         user = request.user
-        if post.likes.filter(user=user).exists():   # Check if the user already liked this post
+        if post.likes.filter(user=user).exists():  # Check if the user already liked this post
             return Response({"detail": "Already liked this post."}, status=status.HTTP_400_BAD_REQUEST)
-        Like.objects.create(post=post, user=user)  # Create a new like
+        
+        Like.objects.create(post=post, user=user)   # Create a new like
+        
+        # Create a notification for the post author
+        Notification.objects.create(
+            recipient=post.author,  # The author of the post receives the notification
+            actor=user,  # The user who liked the post
+            verb="liked",  # Action performed
+            target=post  # The post that was liked
+        )
         return Response({"detail": "Post liked."}, status=status.HTTP_201_CREATED)
+
 
     @action(detail=True, methods=["delete"])
     def unlike(self, request, pk=None):
@@ -91,8 +113,16 @@ class CommentViewSet(viewsets.ModelViewSet):
     pagination_class = StandardResultsSetPagination
 
     def perform_create(self, serializer):
-        """Automatically set the current user as the author when creating a comment"""
-        serializer.save(author=self.request.user)
+        """Automatically set the current user as the author when creating a comment."""
+        comment = serializer.save(author=self.request.user)
+    
+        # Notify the post author about the new comment
+        Notification.objects.create(
+            recipient=comment.post.author,  # Post author receives the notification
+            actor=self.request.user,  # The comment author
+            verb="commented on",  # Action performed
+            target=comment.post  # The post that was commented on
+        )
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)  # Deserialize incoming request data
