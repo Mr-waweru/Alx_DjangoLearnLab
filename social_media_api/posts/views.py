@@ -49,14 +49,16 @@ class PostViewSet(viewsets.ModelViewSet):
             return [permissions.IsAuthenticated(), IsAuthorPermission()]    # Custom permission for authors
         return super().get_permissions()    # Use default permissions for other actions
 
-    @action(detail=False, methods=["get"])
+    @action(detail=False, methods=['get'], permission_classes=[permissions.IsAuthenticated])
     def feed(self, request):
-        """Custom action to fetch a personalized feed"""
-        queryset = self.get_queryset()
-        page = self.paginate_queryset(queryset)
+        """Retrieve paginated posts from followed users"""
+        following_users = request.user.following.all()
+        queryset = Post.objects.filter(author__in=following_users).order_by("-created_at")
+        page = self.paginate_queryset(queryset)  # Apply pagination
         if page is not None:
             serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
+            return self.get_paginated_response(serializer.data)  # Return paginated response
+
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
